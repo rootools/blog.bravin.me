@@ -1,0 +1,343 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Archives: 2013 | rootools blog</title>
+  <meta name="author" content="Anton Bravin">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="rootools blog"/>
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="rootools blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+  
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">rootools blog</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="http://bravin.me">Home</a></li>
+    
+      <li><a href="/">Blog</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title">2013</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-12-06T17:29:00.000Z"><a href="/2013/12/06/вирус/">Dec 6, 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/12/06/вирус/">Вирус?</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Сегодня моя домашняя винда начала меня мучать постоянными сообщениями о том что грохнулся некий winupdatev.exe. Поглядев повнимательнее я заметил что данный процесс грузит процессор до 100%. Гугл не дал ответа ничего по этому поводу(буквально 0 результатов в выдаче). Поэтому на данный момент не ясно это вирус или косяк M$. Сам файл находиться по адресу - &quot;c:\Users\<name>\App Data\Local\Temp\&quot;. Если грохнуть его, то через какое то время он появится заного.. Вообщем подпер костылем - удалил файл и создал такой же пустой(создал пустой txt и переименовал его в winupdatev.exe). Пока так.. =)</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-03-28T07:38:06.000Z"><a href="/2013/03/28/nginx-auth_basic/">Mar 28, 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/03/28/nginx-auth_basic/">Nginx auth_basic</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Доброго времени суток! Намедни столкнулся с не очень очевидным поведеним Nginx при использовании auth_basic. Исходные данные - есть один сервер с Nginx который работает как прокси для другого сервера а apache.</p>
+<pre><code><span class="title">server</span> {
+  <span class="title">listen</span>       <span class="number">80</span>;
+  <span class="title">server_name</span>  host1;
+
+  <span class="title">location</span> / {
+      <span class="title">proxy_pass</span>        <span class="url">http://host2;</span>
+  }</code></pre>
+<p>Наша задача закрыть определенный URL логином:паролем через auth_basic. Мы делаем это так:</p>
+<pre><code><span class="title">server</span> {
+  <span class="title">listen</span>       <span class="number">80</span>;
+  <span class="title">server_name</span>  host1;
+
+  <span class="title">location</span> / {
+      <span class="title">proxy_pass</span>        <span class="url">http://host2;</span>
+  }
+
+  <span class="title">location</span> /admin {
+      <span class="title">auth_basic</span>           <span class="string">"admin zone"</span>;
+      <span class="title">auth_basic_user_file</span> /path/to/passwd;
+  }</code></pre>
+<p>И обнаруживаем что после успешной авторизации мы получаем 404 ошибку. А все дело в том что Nginx пытается после авторизации получить /admin с того же хоста где он сам находится, а не с того куда мы проксируем запрос. Поэтому необходимо сделать следующее:</p>
+<pre><code><span class="title">server</span> {
+  <span class="title">listen</span>       <span class="number">80</span>;
+  <span class="title">server_name</span>  host1;
+
+  <span class="title">location</span> / {
+      <span class="title">proxy_pass</span>        <span class="url">http://host2;</span>
+  }
+
+  <span class="title">location</span> /admin {
+      <span class="title">auth_basic</span>           <span class="string">"admin zone"</span>;
+      <span class="title">auth_basic_user_file</span> /path/to/passwd;
+      <span class="title">location</span> /admin {
+            <span class="title">proxy_pass</span>        <span class="url">http://host2;</span>
+    }
+
+  }</code></pre>
+<p>Вот такая вот неожиданная проблема и примерно такое же неожиданное решение. =)</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-03-18T18:48:04.000Z"><a href="/2013/03/18/fez-is-coming!/">Mar 18, 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/03/18/fez-is-coming!/">FEZ is coming!</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>О да! Он выходит на PC! Я первый в очереди! =)</p>
+<p><img src="fez.jpg" alt=""></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-02-17T09:10:53.000Z"><a href="/2013/02/17/userbar---модуль-для-node.js/">Feb 17, 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/02/17/userbar---модуль-для-node.js/">Userbar - модуль для Node.JS</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Написал тут самый бесполезный, но прикольный модуль для Node.JS. Кто нибудь помнит что такое userbar? Ну хоть кто нибудь? Тогда напоминаю! Userbar - это вот такая вот штука:</p>
+<p><img src="http://img242.imageshack.us/img242/5687/5829wh6.gif" alt=""></p>
+<p><img src="http://img104.imageshack.us/img104/6161/1221al0.jpg" alt=""></p>
+<p>Ну или например вот такая =):</p>
+<p><img src="http://i.imgur.com/husiG.jpg" alt=""></p>
+<p>Вообщем подробнее можно прочитать <a href="http://ru.wikipedia.org/wiki/%D0%AE%D0%B7%D0%B5%D1%80%D0%B1%D0%B0%D1%80" target="_blank">тут</a>.</p>
+<p>Итак, модуль называется <strong>userbar</strong> и вот пример того, что с его помощью можно сделать:</p>
+<p><img src="https://github.com/rootools/node-userbar/raw/master/example.png" alt=""></p>
+<p>GitHub: <a href="https://github.com/rootools/node-userbar" target="_blank"><a href="https://github.com/rootools/node-userbar">https://github.com/rootools/node-userbar</a></a></p>
+<p>NPM: <a href="https://npmjs.org/package/userbar" target="_blank"><a href="https://npmjs.org/package/userbar">https://npmjs.org/package/userbar</a></a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-02-16T23:45:04.000Z"><a href="/2013/02/17/hello-world/">Feb 17, 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/02/17/hello-world/">Hello World</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Тестим статик-блоджик =)</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
+</div></div>
+    <aside id="sidebar" class="alignright">
+<div class="search">
+  <form action="http://google.com/search" method="get" accept-charset="utf-8">
+    <input type="text" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:blog.bravin.me">
+  </form>
+</div>
+
+
+
+
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/games/">games</a><small>1</small></li>
+  
+    <li><a href="/tags/blog/">blog</a><small>1</small></li>
+  
+    <li><a href="/tags/nginx/">nginx</a><small>1</small></li>
+  
+    <li><a href="/tags/nodejs/">nodejs</a><small>1</small></li>
+  
+    <li><a href="/tags/modules/">modules</a><small>1</small></li>
+  
+    <li><a href="/tags/windows/">windows</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+
+<div class="widget twitter">
+  <h3 class="title">Tweets</h3>
+  <ul id="tweets"></ul>
+</div>
+
+<script type="text/javascript">
+var twitter_stream = ['rootools', 3, false];
+var moment_js_path = '/js/moment.min.js';
+</script>
+<script src="/js/twitter.js"></script>
+
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2013 Anton Bravin
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'blogbravinme';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
